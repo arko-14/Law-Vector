@@ -171,4 +171,3 @@ See the LICENSE file for more details.
 
 Have suggestions or want to contribute? Please fork the repo and submit a pull request, or open an issue with your idea.
 
----
