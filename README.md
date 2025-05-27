@@ -80,13 +80,6 @@ Handles:
 
 A saved FAISS index that allows fast vector-based searching. This is built on your legal corpus.
 
-### 🔹 `frontend.py`
-
-A simple user interface (CLI or lightweight frontend) to:
-
-* Prompt queries
-* Display results
-
 ---
 
 ## 📦 Installation
