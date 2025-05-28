@@ -1,9 +1,12 @@
 # app.py
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
 from supabase import create_client, Client
+import json
+import networkx as nx
+import matplotlib.pyplot as plt
 
 from vector_store import build_vector_store, get_context_from_query
 from userupload import extract_text_from_pdf, summarize_text, prepare_prompt
@@ -40,7 +43,6 @@ def upload_pdf():
         "message": f"Uploaded and indexed {file.filename}.",
         "summary": summary
     })
-
 # ─── Contextual Chat Route ───────────────────────────────────────
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -85,6 +87,57 @@ def general_advice():
 
     # 3) Return the answer
     return jsonify({"response": answer})
+# ─── Route: Generate Opinion Map ───────────────────────────────
+@app.route("/opinion_map", methods=["POST"])
+def opinion_map():
+    payload = request.get_json() or {}
+    case_summary = payload.get('summary', '').strip()
+    if not case_summary:
+        return jsonify({'error': 'Field summary is required.'}), 400
+
+    # Ask Perplexity for key opinions and relationships
+    prompt = (
+        "Extract the main legal opinions and their relationships from the following summary. "
+        "Return a JSON object with 'nodes': list of {id, label}, and 'edges': list of {source, target}. "
+        f"Text: {case_summary}"
+    )
+    resp = call_perplexity_sonar(summary=None, user_query=prompt)
+    app.logger.info(f"Perplexity response: {resp}")
+    try:
+        data = json.loads(resp)
+        nodes = data.get('nodes', []) or []
+        edges = data.get('edges', []) or []
+    except Exception as parse_err:
+        app.logger.error(f"Failed to parse Perplexity response as JSON: {parse_err}")
+        return jsonify({
+            'error': 'Failed to parse Perplexity response as JSON.',
+            'raw_response': resp
+        }), 500
+@app.route("/healthz")
+def healthz():
+    return jsonify(status="ok"), 200
+
+    # Build graph
+    G = nx.DiGraph()
+    if not nodes:
+        # Fallback: single node for entire summary
+        G.add_node(0, label='Main Opinion')
+    else:
+        for n in nodes:
+            G.add_node(n.get('id', ''), label=n.get('label', ''))
+    if edges:
+        for e in edges:
+            G.add_edge(e.get('source'), e.get('target'))
+
+    # Draw and save
+    fig, ax = plt.subplots(figsize=(8,6))
+    pos = nx.spring_layout(G) if G.nodes else {n: (0,0) for n in G.nodes}
+    nx.draw(G, pos, with_labels=True, labels=nx.get_node_attributes(G,'label'), ax=ax)
+    img_path = os.path.join('data', 'opinion_map.png')
+    fig.savefig(img_path)
+    plt.close(fig)
+
+    return send_file(img_path, mimetype='image/png')
 
 # ─── Run the app ────────────────────────────────────────────────
 if __name__ == "__main__":
