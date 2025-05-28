@@ -5,8 +5,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from supabase import create_client, Client
 import json
-import networkx as nx
-import matplotlib.pyplot as plt
+#import networkx as nx
+#ort matplotlib.pyplot as plt
 
 from vector_store import build_vector_store, get_context_from_query
 from userupload import extract_text_from_pdf, summarize_text, prepare_prompt
@@ -118,26 +118,26 @@ def healthz():
     return jsonify(status="ok"), 200
 
     # Build graph
-    G = nx.DiGraph()
-    if not nodes:
+    #G = nx.DiGraph()
+    #if not nodes:
         # Fallback: single node for entire summary
-        G.add_node(0, label='Main Opinion')
-    else:
-        for n in nodes:
-            G.add_node(n.get('id', ''), label=n.get('label', ''))
-    if edges:
-        for e in edges:
-            G.add_edge(e.get('source'), e.get('target'))
+        #G.add_node(0, label='Main Opinion')
+    #else:
+        #for n in nodes:
+            #G.add_node(n.get('id', ''), label=n.get('label', ''))
+    #if edges:
+        #for e in edges:
+            #G.add_edge(e.get('source'), e.get('target'))
 
     # Draw and save
-    fig, ax = plt.subplots(figsize=(8,6))
-    pos = nx.spring_layout(G) if G.nodes else {n: (0,0) for n in G.nodes}
-    nx.draw(G, pos, with_labels=True, labels=nx.get_node_attributes(G,'label'), ax=ax)
-    img_path = os.path.join('data', 'opinion_map.png')
-    fig.savefig(img_path)
-    plt.close(fig)
+    #fig, ax = plt.subplots(figsize=(8,6))
+    #pos = nx.spring_layout(G) if G.nodes else {n: (0,0) for n in G.nodes}
+    #nx.draw(G, pos, with_labels=True, labels=nx.get_node_attributes(G,'label'), ax=ax)
+    #img_path = os.path.join('data', 'opinion_map.png')
+    #fig.savefig(img_path)
+    #plt.close(fig)
 
-    return send_file(img_path, mimetype='image/png')
+    #return send_file(img_path, mimetype='image/png')
 
 # ─── Run the app ────────────────────────────────────────────────
 if __name__ == "__main__":
