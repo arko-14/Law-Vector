@@ -656,7 +656,7 @@ def render_footer():
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 LawVector Legal AI. All rights reserved.</p>
+                <p>&copy; 2025 LawVector Legal AI. All rights reserved.</p>
             </div>
         </div>
     """, unsafe_allow_html=True)
