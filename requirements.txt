@@ -10,3 +10,4 @@ pdfplumber
 transformers
 supabase 
 streamlit
+gunicorn
