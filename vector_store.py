@@ -4,7 +4,7 @@ from langchain.document_loaders import PyPDFLoader
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_MODEL_NAME = "sentence-transformers/paraphrase-MiniLM-L3-v2"
 EMBEDDING = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
 INDEX_DIR = "faiss_index"
 
