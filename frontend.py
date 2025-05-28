@@ -26,7 +26,7 @@ if 'history' not in st.session_state:
 
 # ─── Page Config & Enhanced Styles ─────────────────────────────
 st.set_page_config(
-    page_title="CourtBot - Legal AI Assistant",
+    page_title="Law Vector - Legal AI Assistant",
     page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -48,30 +48,30 @@ st.markdown("""
         header {visibility: hidden;}
         .stDeployButton {visibility: hidden;}
         
-        /* Navigation Bar */
         .navbar {
             background: linear-gradient(90deg, #1a2332 0%, #2c3e50 100%);
             padding: 1rem 2rem;
-            margin: -1rem -1rem 0 -1rem;
+            margin: -2rem -2rem 0 -2rem;
             border-bottom: 3px solid #d4af37;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             position: sticky;
-            top: 0;
-            z-index: 1000;
+            
         }
-        
+
         .nav-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
             max-width: 1200px;
-            margin: 0 auto;
+            flex-wrap: wrap;
+            
         }
         
         .logo-section {
             display: flex;
             align-items: center;
             gap: 1rem;
+            margin-top: -17px;
         }
         
         .logo-text {
@@ -87,7 +87,6 @@ st.markdown("""
             font-size: 0.8rem;
             color: #b8c5d1;
             font-style: italic;
-            margin-top: -5px;
         }
         
         /* Navigation Menu */
@@ -118,6 +117,8 @@ st.markdown("""
             display: flex;
             gap: 1rem;
             align-items: center;
+            width: 100%;
+            
         }
         
         .user-profile {
@@ -177,19 +178,38 @@ st.markdown("""
             background: rgba(212, 175, 55, 0.1);
         }
         
-        /* Main Content Container */
-        .main-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            min-height: 70vh;
+        button[kind="primary"],
+        button[kind="secondary"],
+        .stButton > button,
+        .stDownloadButton > button {
+            background: linear-gradient(45deg, #d4af37, #f4d03f) !important;
+            color: #1a2332 !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: auto !important;
+            font-weight: 600 !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 1rem !important;
+            height: 48px !important;
+            width: 100% !important;
+            min-width: 140px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3) !important;
+            white-space: nowrap !important;
+            # margin-top: -75px;
         }
-        
+
+        /* Hover effect for all buttons */
+        button[kind="primary"]:hover,
+        button[kind="secondary"]:hover,
+        .stButton > button:hover,
+        .stDownloadButton > button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4) !important;
+        }        
         /* Hero Section */
         .hero-section {
             text-align: center;
@@ -198,6 +218,11 @@ st.markdown("""
             border-radius: 15px;
             margin-bottom: 3rem;
             border: 1px solid rgba(212, 175, 55, 0.2);
+            height: 55vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         
         .hero-title {
@@ -207,8 +232,7 @@ st.markdown("""
             color: #d4af37;
             margin-bottom: 1rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        
+        }        
         .hero-subtitle {
             font-family: 'Inter', sans-serif;
             font-size: 1.3rem;
@@ -217,7 +241,6 @@ st.markdown("""
             margin: 0 auto 2rem auto;
             line-height: 1.6;
         }
-        
         /* Form Styling */
         .stTextInput > div > div > input {
             background: rgba(255, 255, 255, 0.1) !important;
@@ -225,13 +248,23 @@ st.markdown("""
             border-radius: 10px !important;
             color: #ffffff !important;
             font-family: 'Inter', sans-serif !important;
-            padding: 0.8rem !important;
+            padding: 1.1rem !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             transition: all 0.3s ease !important;
+            margin-bottom: 1.5rem !important;
+            font-size: 1.1rem !important;
+            box-sizing: border-box !important;
+            
+            display: block !important!
+            line-height: normal !important;
         }
-        
+
         .stTextInput > div > div > input:focus {
             border-color: #d4af37 !important;
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.3) !important;
+            padding: 1.1rem !important;
         }
         
         .stFileUploader > div {
@@ -240,24 +273,6 @@ st.markdown("""
             border-radius: 15px !important;
             padding: 2rem !important;
             text-align: center !important;
-        }
-        
-        /* Button Styling */
-        .stButton > button {
-            background: linear-gradient(45deg, #d4af37, #f4d03f) !important;
-            color: #1a2332 !important;
-            border: none !important;
-            border-radius: 25px !important;
-            padding: 0.8rem 2rem !important;
-            font-weight: 600 !important;
-            font-family: 'Inter', sans-serif !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3) !important;
-        }
-        
-        .stButton > button:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4) !important;
         }
         
         /* Chat Styling */
@@ -359,7 +374,12 @@ st.markdown("""
         .social-link {
             background: rgba(212, 175, 55, 0.1);
             padding: 0.8rem;
-            border-radius: 50%;
+            border-radius: 100%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             color: #d4af37;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -457,7 +477,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ─── Auth Helpers ─────────────────────────────────────
 def login(email, password):
     try:
         response = supabase.auth.sign_in_with_password({
@@ -501,25 +520,25 @@ def render_navbar():
         st.markdown("""
             <div class="logo-section">
                 <div>
-                    <div class="logo-text">⚖️ CourtBot</div>
+                    <div class="logo-text">Law Vector</div>
                     <div class="tagline">Professional Legal AI Assistant</div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
     with nav_col2:
-        if st.button("🏠 Home", key="nav_home", help="Go to Home"):
+        if st.button("Home", key="nav_home", help="Go to Home"):
             st.session_state.current_page = "Home"
             st.rerun()
     
     with nav_col3:
-        if st.button("📖 About", key="nav_about", help="Learn About CourtBot"):
+        if st.button("About", key="nav_about", help="Learn About Law Vector"):
             st.session_state.current_page = "About"
             st.rerun()
     
     with nav_col4:
         if st.session_state.logged_in:
-            if st.button("📊 Dashboard", key="nav_dashboard", help="Your Dashboard"):
+            if st.button("Dashboard", key="nav_dashboard", help="Your Dashboard"):
                 st.session_state.current_page = "Dashboard"
                 st.rerun()
     
@@ -527,11 +546,11 @@ def render_navbar():
         if not st.session_state.logged_in:
             auth_col1, auth_col2 = st.columns(2)
             with auth_col1:
-                if st.button("🔑 Login", key="nav_login"):
+                if st.button("Login", key="nav_login"):
                     st.session_state.show_auth_modal = True
                     st.rerun()
             with auth_col2:
-                if st.button("📝 Sign Up", key="nav_signup"):
+                if st.button("Sign Up", key="nav_signup"):
                     st.session_state.show_auth_modal = True
                     st.rerun()
         else:
@@ -566,14 +585,9 @@ def render_auth_modal():
             
             with col2:
                 # Modal content
-                st.markdown("### 🔐 Access Your Legal Assistant")
+                st.markdown("### Access Your Legal Assistant")
                 
-                # Close button
-                if st.button("✕ Close", key="close_modal"):
-                    st.session_state.show_auth_modal = False
-                    st.rerun()
-                
-                tab1, tab2 = st.tabs(["Sign In", "Create Account"])
+                tab1, tab2 = st.tabs(["  Sign In  ", "  Sign Up  "])
                 
                 with tab1:
                     with st.form("modal_login_form"):
@@ -623,36 +637,26 @@ def render_footer():
         <div class="footer">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>CourtBot Legal AI</h3>
-                    <p>Empowering legal professionals with cutting-edge AI technology. Get instant legal insights, document analysis, and professional consultation at your fingertips.</p>
+                    <h3>LawVector Legal AI</h3>
+                    <p>Empowering legal professionals with cutting-edge AI. Instant legal insights and document analysis.</p>
                     <div class="social-links">
-                        <a href="https://twitter.com/courtbot" class="social-link" target="_blank" title="Twitter">🐦</a>
-                        <a href="https://linkedin.com/company/courtbot" class="social-link" target="_blank" title="LinkedIn">💼</a>
-                        <a href="https://facebook.com/courtbot" class="social-link" target="_blank" title="Facebook">📘</a>
-                        <a href="mailto:contact@courtbot.ai" class="social-link" target="_blank" title="Email">📧</a>
-                        <a href="https://github.com/courtbot" class="social-link" target="_blank" title="GitHub">💻</a>
+                        <a href="https://x.com/futurebeast_04" class="social-link" target="_blank" title="Follow us on X">𝕏</a>
+                        <a href="https://x.com/idkwhyvi62159" class="social-link" target="_blank" title="Connect on X">𝕏</a>
                     </div>
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <p><a href="#home">Home</a></p>
                     <p><a href="#about">About Us</a></p>
-                    <p><a href="#services">Services</a></p>
-                    <p><a href="#privacy">Privacy Policy</a></p>
-                    <p><a href="#terms">Terms of Service</a></p>
                     <p><a href="#support">Support Center</a></p>
                 </div>
                 <div class="footer-section">
                     <h3>Contact Us</h3>
-                    <p>📧 support@courtbot.ai</p>
-                    <p>📞 +1 (555) 123-4567</p>
-                    <p>🏢 123 Legal Street<br>Law District, LD 12345</p>
-                    <p>🕒 24/7 AI Support Available</p>
-                    <p>💬 Live Chat Support</p>
+                    <p>📧 lawvector09@gmail.com</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 CourtBot Legal AI. All rights reserved. | Powered by Advanced AI Technology</p>
+                <p>&copy; 2024 LawVector Legal AI. All rights reserved.</p>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -671,12 +675,9 @@ def render_home_page():
             </div>
         """, unsafe_allow_html=True)
         
-        # CTA for non-logged users
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            if st.button("🚀 Get Started Today", key="hero_cta", help="Sign up to access all features"):
-                st.session_state.show_auth_modal = True
-                st.rerun()
+        if st.button("🚀 Get Started Today", key="hero_cta", help="Sign up to access all features"):
+            st.session_state.show_auth_modal = True
+            st.rerun()
     
     # General Legal Advice Section
     st.markdown('<h2 class="section-header">💡 General Legal Advice</h2>', unsafe_allow_html=True)
@@ -705,16 +706,16 @@ def render_home_page():
                                 "role": "system",
                                 "content": """You are a professional legal AI assistant specializing in Indian law and the Indian Penal Code (IPC). 
 
-Provide helpful, accurate legal information while being clear that this is general information and not personalized legal advice. Always recommend consulting with a qualified attorney for specific legal matters.
+                            Provide helpful, accurate legal information while being clear that this is general information and not personalized legal advice. Always recommend consulting with a qualified attorney for specific legal matters.
 
-Guidelines:
-- Focus on Indian law, IPC, and relevant Indian legal procedures
-- Provide clear, professional responses
-- Include relevant legal sections or provisions when applicable
-- Suggest next steps or actions the user might consider
-- Always include a disclaimer about seeking professional legal counsel
-- Be respectful and maintain professional tone
-- If the question is outside Indian law scope, clarify and redirect appropriately"""
+                            Guidelines:
+                            - Focus on Indian law, IPC, and relevant Indian legal procedures
+                            - Provide clear, professional responses
+                            - Include relevant legal sections or provisions when applicable
+                            - Suggest next steps or actions the user might consider
+                            - Always include a disclaimer about seeking professional legal counsel
+                            - Be respectful and maintain professional tone
+                            - If the question is outside Indian law scope, clarify and redirect appropriately"""
                             },
                             {"role": "user", "content": user_question}
                         ],
@@ -746,6 +747,7 @@ Guidelines:
 
                 except Exception as e:
                     st.error(f"❌ Error while fetching advice: {e}")
+    
     
     # Document Analysis Section (for logged-in users)
     if st.session_state.logged_in:
@@ -787,7 +789,7 @@ Guidelines:
         
         # Chat Interface
         st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-        st.markdown('<h3 class="section-header">💬 Legal Consultation Chat</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-header"> Start a consultation based on your uploaded document </h3>', unsafe_allow_html=True)
         
         # Chat input
         query = st.text_input(
@@ -845,13 +847,13 @@ Guidelines:
         st.info("🔐 Please sign in to access advanced features including document upload and AI consultation.")
 
 def render_about_page():
-    st.markdown('<h1 class="section-header">About CourtBot</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="section-header">About Law Vector</h1>', unsafe_allow_html=True)
     
     st.markdown("""
         <div class="about-section">
             <h3 class="about-title">🎯 Our Mission</h3>
             <p class="about-text">
-                CourtBot is revolutionizing the legal industry by making professional legal assistance accessible 
+                Law Vector is revolutionizing the legal industry by making professional legal assistance accessible 
                 to everyone through cutting-edge artificial intelligence. We believe that legal knowledge should 
                 not be a privilege but a right accessible to all, especially in the Indian legal context.
             </p>
@@ -864,19 +866,13 @@ def render_about_page():
                 • <strong>Legal Consultation:</strong> Ask questions and receive professional-grade legal advice<br>
                 • <strong>IPC Guidance:</strong> Specialized knowledge of Indian Penal Code and Indian law<br>
                 • <strong>Contract Review:</strong> Identify key terms, risks, and obligations in contracts<br>
-                • <strong>Case Research:</strong> Access vast legal databases and precedents<br>
-                • <strong>24/7 Availability:</strong> Get legal assistance whenever you need it<br>
-                • <strong>Multi-language Support:</strong> Support for English and regional Indian languages
             </p>
         </div>
         
         <div class="about-section">
             <h3 class="about-title">🔬 Our Technology</h3>
             <p class="about-text">
-                Built on advanced natural language processing and machine learning algorithms, CourtBot 
-                understands legal language and provides accurate, contextual responses. Our AI is trained 
-                on extensive legal databases including Indian law, IPC, and continuously updated with the 
-                latest legal developments and Supreme Court judgments.
+                Law Vector analyzes legal case PDFs using AI to extract key facts, identify relevant laws, and deliver clear summaries. Behind the scenes, it chunks documents, generates embeddings, and performs semantic search using FAISS to find accurate and relevant legal insights. Just upload a PDF—Law Vector does the rest.
             </p>
         </div>
         
@@ -884,24 +880,19 @@ def render_about_page():
             <h3 class="about-title">🔒 Security & Privacy</h3>
             <p class="about-text">
                 We take your privacy seriously. All documents and conversations are encrypted and stored 
-                securely using industry-standard protocols. We comply with all relevant data protection 
-                regulations including Indian data protection laws and never share your information without 
-                explicit consent.
+                securely using industry-standard protocols. 
             </p>
         </div>
         
         <div class="about-section">
             <h3 class="about-title">👥 Our Team</h3>
             <p class="about-text">
-                CourtBot is developed by a team of legal experts, AI researchers, and software engineers 
-                with deep understanding of Indian legal system. Our advisory board includes practicing 
-                lawyers, judges, and legal scholars who ensure our AI provides accurate and relevant 
-                legal guidance.
+                Law Vector was built by two cracked minds obsessed with law and tech. With no big team or backing—just sheer curiosity and chaos—we created it to make sense of legal stuff and maybe help a few people along the way.
             </p>
         </div>
         
         <div class="about-section">
-            <h3 class="about-title">🌟 Why Choose CourtBot?</h3>
+            <h3 class="about-title">🌟 Why Choose Law Vector?</h3>
             <p class="about-text">
                 • <strong>Accuracy:</strong> Trained on verified legal sources and Indian law<br>
                 • <strong>Speed:</strong> Get instant responses to complex legal questions<br>
@@ -915,10 +906,10 @@ def render_about_page():
 
 def render_dashboard_page():
     if not st.session_state.logged_in:
-        st.error("🔐 Please log in to access your dashboard.")
+        st.error(" Please log in to access your dashboard.")
         return
     
-    st.markdown('<h1 class="section-header">📊 Your Legal Dashboard</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="section-header"> Your Legal Dashboard</h1>', unsafe_allow_html=True)
     
     # Dashboard metrics
     col1, col2, col3 = st.columns(3)
@@ -926,7 +917,7 @@ def render_dashboard_page():
     with col1:
         st.markdown("""
             <div class="about-section">
-                <h3 class="about-title">📄 Documents Analyzed</h3>
+                <h3 class="about-title">Documents Analyzed</h3>
                 <p class="about-text" style="font-size: 2rem; text-align: center; color: #d4af37;">12</p>
                 <p class="about-text" style="text-align: center;">Total documents processed</p>
             </div>
@@ -935,7 +926,7 @@ def render_dashboard_page():
     with col2:
         st.markdown("""
             <div class="about-section">
-                <h3 class="about-title">💬 Consultations</h3>
+                <h3 class="about-title"> Consultations</h3>
                 <p class="about-text" style="font-size: 2rem; text-align: center; color: #d4af37;">28</p>
                 <p class="about-text" style="text-align: center;">Legal questions answered</p>
             </div>
@@ -944,7 +935,7 @@ def render_dashboard_page():
     with col3:
         st.markdown("""
             <div class="about-section">
-                <h3 class="about-title">⏱️ Time Saved</h3>
+                <h3 class="about-title"> Time Saved</h3>
                 <p class="about-text" style="font-size: 2rem; text-align: center; color: #d4af37;">45h</p>
                 <p class="about-text" style="text-align: center;">Hours of legal research</p>
             </div>
@@ -953,7 +944,7 @@ def render_dashboard_page():
     # Recent activity
     st.markdown("""
         <div class="about-section">
-            <h3 class="about-title">📈 Recent Activity</h3>
+            <h3 class="about-title"> Recent Activity</h3>
             <p class="about-text">
                 • <strong>Today:</strong> Contract analysis completed - Employment Agreement<br>
                 • <strong>Yesterday:</strong> Legal consultation - Tenant rights inquiry under IPC<br>
@@ -970,18 +961,18 @@ def render_dashboard_page():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("📄 Upload New Document", key="quick_upload"):
+        if st.button(" Upload New Document", key="quick_upload"):
             st.session_state.current_page = "Home"
             st.rerun()
     
     with col2:
-        if st.button("💡 Ask Legal Question", key="quick_question"):
+        if st.button(" Ask Legal Question", key="quick_question"):
             st.session_state.current_page = "Home"
             st.rerun()
     
     with col3:
-        if st.button("📊 View Analytics", key="quick_analytics"):
-            st.info("📊 Detailed analytics coming soon!")
+        if st.button(" View Analytics", key="quick_analytics"):
+            st.info(" Detailed analytics coming soon!")
 
 # ─── Main App Logic ────────────────────────────────────
 def main():
