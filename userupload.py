@@ -1,8 +1,16 @@
+import os
+import requests
 import pdfplumber
-from transformers import pipeline
 
-# Summarizer pipeline (facebook/bart-large-cnn)
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+# Add your Hugging Face API token
+HF_API_TOKEN = "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"
+HF_MODEL = "sshleifer/distilbart-cnn-12-6"
+HF_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+
+HEADERS = {
+    "Authorization": f"Bearer {HF_API_TOKEN}",
+    "Content-Type": "application/json"
+}
 
 def extract_text_from_pdf(path: str) -> str:
     """Return full text of the PDF at path."""
@@ -19,21 +27,28 @@ def extract_text_from_pdf(path: str) -> str:
 
 def summarize_text(text: str, max_length=512) -> str:
     """
-    Generate a brief summary of text.
-    BART will chunk internally if needed.
+    Generate a brief summary of text via Hugging Face Inference API.
     """
     if not text.strip():
         return "No text to summarize."
 
-    try:
-        # Truncate text if it exceeds the maximum length
-        if len(text) > 1024:  # Example length limit, adjust as needed
-            text = text[:1024]
+    chunk = text[:1024]
+    payload = {
+        "inputs": chunk,
+        "parameters": {"max_length": max_length, "min_length": 80}
+    }
 
-        summary = summarizer(text, max_length=max_length, min_length=80, do_sample=False)
-        return summary[0]["summary_text"]
+    try:
+        response = requests.post(HF_URL, headers=HEADERS, json=payload)
+        response.raise_for_status()
+        result = response.json()
+
+        if isinstance(result, list) and "summary_text" in result[0]:
+            return result[0]["summary_text"]
+        else:
+            return "Unexpected response format."
     except Exception as e:
-        print(f"Error summarizing text: {e}")
+        print(f"Error calling HF Inference API: {e}")
         return "Error generating summary."
 
 def prepare_prompt(user_question: str, context: str, summary: str = None) -> str:
