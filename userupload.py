@@ -4,7 +4,7 @@ import pdfplumber
 
 # Add your Hugging Face API token
 HF_API_TOKEN = "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"
-HF_MODEL = "sshleifer/distilbart-cnn-12-6"
+HF_MODEL = "facebook/bart-large-cnn"
 HF_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
 
 HEADERS = {
@@ -63,3 +63,4 @@ def prepare_prompt(user_question: str, context: str, summary: str = None) -> str
     parts.append(f"Relevant Excerpts:\n{context}\n")
     parts.append(f"User Question:\n{user_question}")
     return "\n\n".join(parts)
+
