@@ -1,6 +1,7 @@
 import os
 import requests
 import streamlit as st
+import re
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
@@ -692,61 +693,66 @@ def render_home_page():
         if not user_question.strip():
             st.warning("Please type a question first.")
         else:
-            with st.spinner("Analyzing your legal question..."):
-                try:
-                    api_key = "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"
-                    headers = {
-                        "Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json"
-                    }
-                    payload = {
-                        "model": "sonar-pro",
-                        "messages": [
-                            {
-                                "role": "system",
-                                "content": """You are a professional legal AI assistant specializing in Indian law and the Indian Penal Code (IPC). 
+            # Strict legal keyword check
+            if not re.search(r"\b(ipc|indian law|section|act|rights|penal|contract|agreement|tort|civil law|criminal law|legal|laws|IPC|supreme court|high court|district courtplaintiff | defendant | petitioner | respondent | jurisdiction | venue | tort | contract | affidavit | deposition | subpoena | injunction | statute | ordinance | precedent | common law | equity | litigation | arbitration | mediation | bench trial | jury trial | appeal | verdict | judgment | sentencing | bail | indictment | habeas corpus | due process | discovery | motion | hearing | cross-examination | testimony | exhibit | legal counsel | bar | bench | docket | pleadings | equitable relief | punitive damages | compensatory damages | contempt | statute of limitations | legal brief | summons | writ | legal aid | amendment | memorandum of understanding | power of attorney | arbitration award | conciliation | class action | contempt of court | bail bond | probation | parole | acquittal | conviction | ex parte | voir dire | interlocutory | prima facie | res judicata | pro bono | equitable estoppel | estoppel by record | force majeure | garnishment | injunction bond | joinder | locus standi | mandamus | misfeasance | nonfeasance | perjury | petitioner-in-intervention | promissory estoppel | quo warranto | remand | seisin | small claims court | stay of execution | summary judgment | subpoena duces tecum | superintendence | surety | third-party complaint | truancy | vicarious liability | writ of attachment | writ of execution | Supreme Court | High Court | District Court | Sessions Court | Civil Court | Criminal Court | Family Court | Juvenile Court | Consumer Court | Labour Court | Lok Adalat | National Green Tribunal | National Company Law Tribunal (NCLT) | Debt Recovery Tribunal (DRT) | Income Tax Appellate Tribunal (ITAT) | Customs, Excise & Service Tax Appellate Tribunal (CESTAT) | Cyber Appellate Tribunal | Motor Accidents Claims Tribunal (MACT) | Special Court (NDPS Act) | Special Court (PMLA) | Election Tribunal | CBI Court | Metropolitan Magistrate Court | Judicial Magistrate Court | Small Causes Court | Securities Appellate Tribunal | Fast Track Court | Revenue Court | District Consumer Disputes Redressal Forum | State Consumer Disputes Redressal Commission | National Consumer Disputes Redressal Commission)\b", user_question, re.IGNORECASE):
+                st.error("Sorry, I can only provide information related to legal questions.")
+            else:
+                with st.spinner("Analyzing your legal question..."):
+                    try:
+                        api_key = "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"
+                        headers = {
+                            "Authorization": f"Bearer {api_key}",
+                            "Content-Type": "application/json"
+                        }
+                        payload = {
+                            "model": "sonar-pro",
+                            "messages": [
+                                {
+                                    "role": "system",
+                                    "content": """
+You are a legal assistant specialized strictly in Indian law and the Indian Penal Code (IPC).
 
-                            Provide helpful, accurate legal information while being clear that this is general information and not personalized legal advice. Always recommend consulting with a qualified attorney for specific legal matters.
+Your ONLY job is to answer questions related to Indian law. If a user asks about anything outside Indian law — including international law, general topics, or casual questions — DO NOT answer them. Instead, respond strictly with:
 
-                            Guidelines:
-                            - Focus on Indian law, IPC, and relevant Indian legal procedures
-                            - Provide clear, professional responses
-                            - Include relevant legal sections or provisions when applicable
-                            - Suggest next steps or actions the user might consider
-                            - Always include a disclaimer about seeking professional legal counsel
-                            - Be respectful and maintain professional tone
-                            - If the question is outside Indian law scope, clarify and redirect appropriately"""
-                            },
-                            {"role": "user", "content": user_question}
-                        ],
-                        "temperature": 0.2,
-                        "max_tokens": 600
-                    }
+'Sorry, I can only provide information related to Indian law.'
 
-                    response = requests.post(
-                        "https://api.perplexity.ai/chat/completions",
-                        json=payload,
-                        headers=headers
-                    )
+Rules:
+1. Do NOT answer anything that is not about Indian law.
+2. If you are unsure whether the question is about Indian law, assume it is NOT and refuse to answer.
+3. You MUST include the disclaimer: 'This is general legal information and not legal advice. Please consult a qualified attorney for specific legal matters.'
+"""
 
-                    if response.ok:
-                        data = response.json()
-                        advice = data["choices"][0]["message"]["content"].strip()
-                        st.markdown(f'<div class="chat-bubble bot-message">{advice}</div>', unsafe_allow_html=True)
+                                },
+                                {"role": "user", "content": user_question}
+                            ],
+                            "temperature": 0.1,
+                            "max_tokens": 600
+                        }
 
-                        # Option to store data
-                        if st.checkbox("Allow us to store this for research purposes (helps improve our AI)", key="store_data"):
-                            try:
-                                record = {"query": user_question, "response": advice}
-                                res = supabase.table("legal_queries").insert(record).execute()
-                                st.success("✅ Thank you! Your data has been saved for research purposes.")
-                            except:
-                                st.error("❌ Sorry, we couldn't save your data at this time.")
-                    else:
-                        st.error(f"❌ API error: {response.status_code} – {response.text}")
+                        response = requests.post(
+                            "https://api.perplexity.ai/chat/completions",
+                            json=payload,
+                            headers=headers
+                        )
 
-                except Exception as e:
-                    st.error(f"❌ Error while fetching advice: {e}")
+                        if response.ok:
+                            data = response.json()
+                            advice = data["choices"][0]["message"]["content"].strip()
+                            st.markdown(f'<div class="chat-bubble bot-message">{advice}</div>', unsafe_allow_html=True)
+
+                            # Option to store data
+                            if st.checkbox("Allow us to store this for research purposes (helps improve our AI)", key="store_data"):
+                                try:
+                                    record = {"query": user_question, "response": advice}
+                                    res = supabase.table("legal_queries").insert(record).execute()
+                                    st.success("✅ Thank you! Your data has been saved for research purposes.")
+                                except:
+                                    st.error("❌ Sorry, we couldn't save your data at this time.")
+                        else:
+                            st.error(f"❌ API error: {response.status_code} – {response.text}")
+
+                    except Exception as e:
+                        st.error(f"❌ Error while fetching advice: {e}")
     
     
     # Document Analysis Section (for logged-in users)
