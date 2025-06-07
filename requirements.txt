@@ -2,10 +2,8 @@ flask
 flask-cors
 python-dotenv
 requests
-langchain-community
-faiss-cpu 
 sentence-transformers 
-pypdf 
+pymupdf
 pdfplumber 
 transformers
 supabase 
