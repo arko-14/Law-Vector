@@ -11,3 +11,4 @@ transformers
 supabase 
 streamlit
 gunicorn
+pinecone-client>=5.0
