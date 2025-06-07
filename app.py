@@ -1,31 +1,28 @@
-# app.py
 import os
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
 from supabase import create_client, Client
 import json
-#import networkx as nx
-#ort matplotlib.pyplot as plt
 
 from vector_store import build_vector_store, get_context_from_query
 from userupload import extract_text_from_pdf, summarize_text, prepare_prompt
 from chatbot import call_perplexity_sonar
 
-# ─── Load env (for other configs) & init app & CORS ────────────────
+# ─── Load env & init app ─────────────────────────────────────────────
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# ─── Supabase client setup (hardcoded) ─────────────────────────────
+# ─── Supabase client ────────────────────────────────────────────────
 SUPABASE_URL = "https://ctrbrlsgdteajwncawzu.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cmJybHNnZHRlYWp3bmNhd3p1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Njc4NDAyOSwiZXhwIjoyMDYyMzYwMDI5fQ.3yIi76DPD0uEjobuwFS8C90YxhfcnK8lcbRMDHdsFls"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cmJybHNnZHRlYWp3bmNhd3p1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Njc4NDAyOSwiZXhwIjoyMDYyMzYwMDI5fQ.3yIi76DPD0uEjobuwFS8C90YxhfcnK8lcbRMDHdsFls"  # replace with secure method
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ─── Build FAISS index on startup ────────────────────────────────
+# ─── Build vector index on startup ──────────────────────────────────
 build_vector_store(data_dir="data")
 
-# ─── PDF Upload Route ───────────────────────────────────────────
+# ─── PDF Upload Route ───────────────────────────────────────────────
 @app.route("/upload", methods=["POST"])
 def upload_pdf():
     file = request.files.get("file")
@@ -37,13 +34,16 @@ def upload_pdf():
 
     raw_text = extract_text_from_pdf(save_path)
     summary = summarize_text(raw_text)
-    build_vector_store(data_dir="data")
+
+    # ✅ Only re-index this single file, not all files
+    build_vector_store(file_path=save_path)
 
     return jsonify({
         "message": f"Uploaded and indexed {file.filename}.",
         "summary": summary
     })
-# ─── Contextual Chat Route ───────────────────────────────────────
+
+# ─── Contextual Chat Route ──────────────────────────────────────────
 @app.route("/chat", methods=["POST"])
 def chat():
     payload = request.get_json() or {}
@@ -55,16 +55,15 @@ def chat():
     if not chunks:
         return jsonify({"error": "No relevant documents found for your query."}), 404
 
-    full_context = "\n---\n".join(
-        c.page_content if hasattr(c, "page_content") else str(c)
-        for c in chunks
-    )
+    # ✅ No page_content, just raw strings now
+    full_context = "\n---\n".join(chunks)
+
     summary = summarize_text(full_context)
     answer = call_perplexity_sonar(summary, user_q)
 
     return jsonify({"response": answer})
 
-# ─── General Advice Route ────────────────────────────────────────
+# ─── General Legal Advice Route ─────────────────────────────────────
 @app.route("/general_advice", methods=["POST"])
 def general_advice():
     payload = request.get_json() or {}
@@ -72,10 +71,8 @@ def general_advice():
     if not user_q:
         return jsonify({"error": "Field 'question' is required."}), 400
 
-    # 1) Get answer from Perplexity
     answer = call_perplexity_sonar(summary=None, user_query=user_q)
 
-    # 2) Insert into Supabase
     try:
         res = supabase.table("legal_queries").insert({
             "query": user_q,
@@ -85,9 +82,9 @@ def general_advice():
     except Exception as e:
         app.logger.error(f"Error storing to Supabase: {e}")
 
-    # 3) Return the answer
     return jsonify({"response": answer})
-# ─── Route: Generate Opinion Map ───────────────────────────────
+
+# ─── Opinion Map (graph generator) ─────────────────────────────────
 @app.route("/opinion_map", methods=["POST"])
 def opinion_map():
     payload = request.get_json() or {}
@@ -95,7 +92,6 @@ def opinion_map():
     if not case_summary:
         return jsonify({'error': 'Field summary is required.'}), 400
 
-    # Ask Perplexity for key opinions and relationships
     prompt = (
         "Extract the main legal opinions and their relationships from the following summary. "
         "Return a JSON object with 'nodes': list of {id, label}, and 'edges': list of {source, target}. "
@@ -107,39 +103,19 @@ def opinion_map():
         data = json.loads(resp)
         nodes = data.get('nodes', []) or []
         edges = data.get('edges', []) or []
+        return jsonify({"nodes": nodes, "edges": edges})
     except Exception as parse_err:
-        app.logger.error(f"Failed to parse Perplexity response as JSON: {parse_err}")
+        app.logger.error(f"Failed to parse Perplexity response: {parse_err}")
         return jsonify({
-            'error': 'Failed to parse Perplexity response as JSON.',
+            'error': 'Failed to parse Perplexity response.',
             'raw_response': resp
         }), 500
+
+# ─── Health Check ──────────────────────────────────────────────────
 @app.route("/healthz")
 def healthz():
     return jsonify(status="ok"), 200
 
-    # Build graph
-    #G = nx.DiGraph()
-    #if not nodes:
-        # Fallback: single node for entire summary
-        #G.add_node(0, label='Main Opinion')
-    #else:
-        #for n in nodes:
-            #G.add_node(n.get('id', ''), label=n.get('label', ''))
-    #if edges:
-        #for e in edges:
-            #G.add_edge(e.get('source'), e.get('target'))
-
-    # Draw and save
-    #fig, ax = plt.subplots(figsize=(8,6))
-    #pos = nx.spring_layout(G) if G.nodes else {n: (0,0) for n in G.nodes}
-    #nx.draw(G, pos, with_labels=True, labels=nx.get_node_attributes(G,'label'), ax=ax)
-    #img_path = os.path.join('data', 'opinion_map.png')
-    #fig.savefig(img_path)
-    #plt.close(fig)
-
-    #return send_file(img_path, mimetype='image/png')
-
-# ─── Run the app ────────────────────────────────────────────────
+# ─── Run App ───────────────────────────────────────────────────────
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Render sets PORT automatically
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
