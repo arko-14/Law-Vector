@@ -1,27 +1,27 @@
 FROM python:3.10-slim
 
-# Prevents Python from writing .pyc files to disc and buffering stdout/stderr
+# Prevent Python from writing .pyc files and buffer stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create and set the working directory
+# Set working dir
 WORKDIR /app
 
-# Copy all project files
+# Copy project files
 COPY . .
 
-# Upgrade pip and install dependencies
+# Install dependencies
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt && \
-    pip install supervisor
+    pip install -r requirements.txt
 
-# Expose Streamlit and Flask ports
-EXPOSE 8501
-EXPOSE 5000
+# Expose your app ports
+EXPOSE 8501 5000
 
-# Copy the supervisord config
-COPY supervisord.conf /etc/supervisord.conf
+# Start both frontend and backend.
+# If you’re using Streamlit for your frontend and Flask for your backend:
+#  - We’ll launch them in the background using & and wait
+CMD streamlit run frontend.py --server.port 8501 --server.headless true & \
+    python app.py
 
-# Run both the frontend and backend
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+
 
