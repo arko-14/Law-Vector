@@ -1,6 +1,6 @@
 # 🧠 Law Vector 
 
-A powerful, AI-driven legal document search and understanding tool built for lawyers, law students, and legal researchers. This system leverages vector embeddings and FAISS (Facebook AI Similarity Search) to help users find, compare, and understand legal cases with ease and accuracy.
+A powerful, AI-driven legal document search and understanding tool built for lawyers, law students, and legal researchers. This system leverages vector embeddings and pinecone to help users find, compare, and understand legal cases with ease and accuracy.
 
 ---
 
@@ -61,9 +61,9 @@ This is the backend server script. It defines routes (probably using FastAPI or 
 
 Implements the chatbot interface that:
 
-* Accepts user questions in natural language
-* Uses embeddings and FAISS to retrieve relevant legal texts
-* Returns a summarized or direct response to the user
+- 🗣 Accepts legal questions in natural language
+- 📚 Uses **embeddings + Pinecone** to fetch relevant legal texts
+- 📝 Summarizes or returns direct case-based responses
 
 ### 🔹 `userupload.py`
 
@@ -77,13 +77,17 @@ Manages the upload process:
 
 Handles:
 
-* Generating text embeddings 
-* Managing vector indexing using FAISS
-* Searching vectors semantically
+- 📐 Generates sentence embeddings
+- 🔎 Uses **Pinecone** for indexing and semantic search
+- ⚡ Ensures fast, accurate similarity retrieval
+  
 
-### 🔹 `law_index.faiss`
+## 🔹 law_index.pinecone
 
-A Pinecone-powered vector index enables fast, scalable semantic search across your legal corpus.
+The persistent vector index built using **Pinecone**. Enables:
+
+- 🧠 Real-time semantic search
+- ⚖️ Scalable querying across a legal corpus
 
 ---
 
