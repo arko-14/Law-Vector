@@ -72,13 +72,13 @@ Manages the upload process:
 
 Handles:
 
-* Generating text embeddings (e.g., via OpenAI, HuggingFace models)
+* Generating text embeddings 
 * Managing vector indexing using FAISS
 * Searching vectors semantically
 
 ### 🔹 `law_index.faiss`
 
-A saved FAISS index that allows fast vector-based searching. This is built on your legal corpus.
+A Pinecone-powered vector index enables fast, scalable semantic search across your legal corpus.
 
 ---
 
@@ -91,7 +91,7 @@ A saved FAISS index that allows fast vector-based searching. This is built on yo
 * python-dotenv
 * requests
 * langchain
-* faiss-cpu 
+* pinecone
 * sentence-transformers 
 * pypdf 
 * pdfplumber
@@ -110,11 +110,16 @@ pip install -r requirements.txt
 
 ### 🔐 Environment Setup
 
-Create a `.env` file and include any keys or configurations (Perplexity api)
+Create a `.env` file and include all keys and configurations 
 
 ```
 PERPLEXITY_API_KEY=your-secret-api-key
 PERPLEXITY_API_URL=https://api.perplexity.ai/query
+SUPABASE_URL = "https://ctrbrlsgdteajwncawzu.supabase.co"
+SUPABASE_KEY ="your-secret-key"  
+HF_API_token = "your-secret-key"
+HF_model = "facebook/bart-large-cnn"
+PINECONE_API_KEY = "your-secret-key"
 
 ```
 
@@ -155,7 +160,7 @@ And receive accurate, relevant results from your corpus.
 ## 🧠 Behind the Scenes
 
 * **Embeddings:** Legal texts are converted into dense vector representations using transformer-based models.
-* **FAISS Index:** Used to perform efficient similarity searches over these vectors.
+* **Pinecone Index:** Enables efficient, scalable similarity search across large volumes of legal embeddings in real time.
 * **Chunking Strategy:** Long documents are split into manageable sections (e.g., 512 tokens), so even small, relevant sections can be found.
 
 ---
