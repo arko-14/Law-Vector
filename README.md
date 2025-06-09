@@ -19,25 +19,30 @@ With a user-friendly interface and robust backend, you can:
 ## 📁 Project Structure
 
 ```
-backend/
+law-vector/
 │
-├── __pycache__/            # Compiled Python cache files
-├── data/                   # Folder for raw or uploaded legal data
-├── faiss_index/            # Stores FAISS vector index files
-├── index.faiss/            # Another possible vector storage location
-├── law_index/              # Directory for law-specific indexed content
+├── backend/                         # Backend source code
+│   ├── __pycache__/                # Python cache files
+│   ├── data/                       # Uploaded legal documents
+│   ├── faiss_index/                # (Legacy) FAISS index storage folder
+│   ├── index.faiss/                # (Legacy) FAISS index folder (duplicate)
+│   ├── law_index/                  # Indexed legal chunks (per document/case)
+│   ├── .gitignore                  # Git ignore rules
+│   ├── app.py                      # FastAPI/Flask server main entry point
+│   ├── chatbot.py                  # Chat interaction logic + RAG integration
+│   ├── data.py                     # Data processing and helper functions
+│   ├── userupload.py               # PDF/txt upload, chunking, and parsing logic
+│   ├── vector_store.py             # Embedding generation & Pinecone integration
+│   ├── frontend.py                 # CLI or simple UI interface (optional frontend)
+│   ├── law_index.faiss             # (Legacy) Serialized FAISS index file
 │
-├── .env                    # Environment variables (e.g., API keys, DB URI)
-├── app.py                  # Main entry point to run the backend application (FastAPI/Flask)
-├── chatbot.py              # Core logic for handling chat and user queries
-├── law_index.faiss         # Serialized FAISS index file
-├── userupload.py           # Handles file uploads and document parsing
-├── vector_store.py         # Manages embeddings and vector database operations
-│
-├── frontend.py             # Command-line or minimal GUI for user interaction
-├── LICENSE                 # Open source license
-├── README.md               # Project documentation
-├── requirements.txt        # Python dependencies
+├── Dockerfile                      # Docker config for containerizing the app
+├── LICENSE                         # License file (Apache-2.0)
+├── Procfile                        # Heroku deployment config
+├── README.md                       # Project documentation
+├── app.py                          # Duplicate of backend/app.py if used for deploy
+├── chatbot.py                      # Duplicate for simpler deployment
+
 ```
 
 ---
