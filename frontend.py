@@ -8,8 +8,8 @@ from supabase import create_client, Client
 load_dotenv()
 
 # ─── Supabase Setup ─────────────────────────────────
-supabase_url = "https://ctrbrlsgdteajwncawzu.supabase.co"
-supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cmJybHNnZHRlYWp3bmNhd3p1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3ODQwMjksImV4cCI6MjA2MjM2MDAyOX0.0RWo4x5h8D6k_OzLdd6lm8kw1Qpm0vVpGSmJX7DMA3c"
+supabase_url = os.getenv('SUPABASE_URL')
+supabase_key = os.getenv('SUPABASE_KEY')
 
 supabase: Client = create_client(supabase_url, supabase_key)
 

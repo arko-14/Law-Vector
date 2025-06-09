@@ -1,7 +1,9 @@
 import requests
+from dotenv import load_dotenv
+import os
 
-PPLX_API_KEY = "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"  # hardcoded as you wanted
-
+load_dotenv() 
+PPLX_API_KEY = os.getenv("PPLX_API_key")
 API_URL = "https://api.perplexity.ai/chat/completions"
 
 SYSTEM_PROMPT = """

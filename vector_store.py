@@ -3,9 +3,13 @@ import fitz  # PyMuPDF
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone, ServerlessSpec
 import re
+from dotenv import load_dotenv
+import os
+
+load_dotenv() 
 
 # === Config ===
-PINECONE_API_KEY = "pcsk_6kqUF1_LBEy7fbF4q6Ez6W4fPfYCBrb7eEZMDPzjYrJzCKuQnJkLZarXhHm5rnZKCaWGys"
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENV = "us-east-1"
 INDEX_NAME = "lawvector"
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L3-v2"
