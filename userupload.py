@@ -1,10 +1,13 @@
 import os
 import requests
 import pdfplumber
+from dotenv import load_dotenv
+import os
 
+load_dotenv() 
 # Add your Hugging Face API token
-HF_API_TOKEN = "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"
-HF_MODEL = "facebook/bart-large-cnn"
+HF_API_TOKEN = os.getenv("HF_API_token")
+HF_MODEL = os.getenv("HF_model")
 HF_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
 
 HEADERS = {

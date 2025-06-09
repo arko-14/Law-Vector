@@ -15,8 +15,9 @@ app = Flask(__name__)
 CORS(app)
 
 # ─── Supabase client ────────────────────────────────────────────────
-SUPABASE_URL = "https://ctrbrlsgdteajwncawzu.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cmJybHNnZHRlYWp3bmNhd3p1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Njc4NDAyOSwiZXhwIjoyMDYyMzYwMDI5fQ.3yIi76DPD0uEjobuwFS8C90YxhfcnK8lcbRMDHdsFls"  # replace with secure method
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ─── Build vector index on startup ──────────────────────────────────
