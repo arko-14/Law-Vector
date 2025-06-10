@@ -51,7 +51,7 @@ law-vector/
 
 ### 🔹 `app.py`
 
-This is the backend server script. It defines routes (probably using FastAPI or Flask) for user interaction such as:
+This is the backend server script. It defines routes (Flask) for user interaction such as:
 
 * File upload
 * Submitting a query
